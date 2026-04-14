@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fertitrack – Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .login-card {
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 24px;
+      padding: 56px 48px;
+      width: 420px;
+      text-align: center;
+      box-shadow: 0 32px 64px rgba(0,0,0,0.4);
+    }
+    .logo {
+      font-size: 36px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -1px;
+      margin-bottom: 4px;
+    }
+    .logo span { color: #4ade80; }
+    .tagline {
+      color: rgba(255,255,255,0.5);
+      font-size: 14px;
+      margin-bottom: 40px;
+    }
+    input[type="password"] {
+      width: 100%;
+      padding: 16px 20px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 12px;
+      color: #fff;
+      font-size: 16px;
+      font-family: 'Inter', sans-serif;
+      outline: none;
+      transition: border 0.2s;
+    }
+    input[type="password"]:focus {
+      border-color: #4ade80;
+    }
+    input[type="password"]::placeholder { color: rgba(255,255,255,0.3); }
+    button {
+      width: 100%;
+      margin-top: 16px;
+      padding: 16px;
+      background: #4ade80;
+      color: #0f2027;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 700;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+    button:hover { background: #22c55e; }
+    button:active { transform: scale(0.98); }
+    .error {
+      margin-top: 16px;
+      color: #f87171;
+      font-size: 14px;
+    }
+    .leaf {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-card">
+    <div class="leaf">🌱</div>
+    <div class="logo">Ferti<span>track</span></div>
+    <div class="tagline">Global Fertilizer Intelligence Platform</div>
+    <form method="POST">
+      <input type="password" name="password" placeholder="Enter your password" autofocus />
+      <button type="submit">Enter Dashboard</button>
+      {% if error %}
+        <div class="error">{{ error }}</div>
+      {% endif %}
+    </form>
+  </div>
+</body>
+</html>
