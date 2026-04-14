@@ -328,20 +328,46 @@
     const container = document.getElementById('priceCards');
     container.innerHTML = '';
 
-    // Pick key products to show as cards
-    const priority = ['Urea Granular', 'Urea Prilled', 'DAP', 'MAP', 'MOP', 'Ammonia', 'Phosphate', 'Potash', 'Nitrate', 'Sulphur'];
-    let shown = 0;
-    const keys = Object.keys(data);
+    // Pick one representative series per commodity category
+    const categories = [
+      { label: 'Urea Granular', match: 'Urea Granular Bulk FOB | Middle East' },
+      { label: 'Urea Prilled', match: 'Urea Prilled Bulk FOB | Black Sea' },
+      { label: 'Ammonia', match: 'Ammonia Bulk FOB | Middle East' },
+      { label: 'DAP', match: 'DAP Bulk FOB | North Africa' },
+      { label: 'MAP', match: 'MAP Bulk FOB' },
+      { label: 'MOP (Potash)', match: 'MOP Granular Bulk FOB' },
+      { label: 'TSP', match: 'TSP Bulk FOB' },
+      { label: 'AN (Ammonium Nitrate)', match: 'AN Bulk FOB' },
+      { label: 'UAN', match: 'UAN Bulk FOB' },
+      { label: 'Sulphur', match: 'Sulphur Bulk FOB' },
+      { label: 'Phosphoric Acid', match: 'Phosphoric Acid' },
+      { label: 'Nitrates', match: 'Nitrate' },
+    ];
 
-    // Sort: prioritise key products
-    const sorted = keys.sort((a,b) => {
-      const ai = priority.findIndex(p => a.includes(p));
-      const bi = priority.findIndex(p => b.includes(p));
-      return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
-    });
+    // For each category, find best matching key
+    const usedKeys = new Set();
+    const selectedKeys = [];
 
-    for (const key of sorted) {
-      if (shown >= 24) break;
+    for (const cat of categories) {
+      // Try exact match first, then partial
+      let found = Object.keys(data).find(k => k.includes(cat.match));
+      if (!found) found = Object.keys(data).find(k => k.toLowerCase().includes(cat.label.toLowerCase().split(' ')[0]));
+      if (found && !usedKeys.has(found) && data[found].length > 2) {
+        usedKeys.add(found);
+        selectedKeys.push({ key: found, label: cat.label });
+      }
+    }
+
+    // Fill remaining slots with other products not yet shown
+    for (const key of Object.keys(data)) {
+      if (selectedKeys.length >= 24) break;
+      if (!usedKeys.has(key) && data[key].length > 2) {
+        usedKeys.add(key);
+        selectedKeys.push({ key, label: null });
+      }
+    }
+
+    for (const { key, label } of selectedKeys) {
       const pts = data[key];
       if (!pts || pts.length < 2) continue;
       const last = pts[pts.length - 1];
@@ -361,7 +387,7 @@
       const changeSymbol = change > 0 ? '▲' : change < 0 ? '▼' : '–';
 
       card.innerHTML = `
-        <div class="product">${product}</div>
+        <div class="product">${label || product}</div>
         <div class="location">${location || 'Global'}</div>
         <div class="price">$${last.price.toFixed(0)}</div>
         <div class="unit">USD per tonne · ${last.date}</div>
