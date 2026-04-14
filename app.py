@@ -7,8 +7,12 @@ from functools import wraps
 app = Flask(__name__)
 app.secret_key = "fertitrack-secret-2024"
 
-# Simple password protection
 PASSWORD = "fertitrack2024"
+
+# Cache data at startup so we don't re-parse on every request
+print("Loading fertilizer data...")
+_cached_data = parse_prices()
+print(f"Loaded {len(_cached_data)} price series.")
 
 def login_required(f):
     @wraps(f)
@@ -36,22 +40,19 @@ def logout():
 @app.route("/")
 @login_required
 def index():
-    data = parse_prices()
-    latest = get_latest_prices(data)
-    products = get_product_list(data)
+    latest = get_latest_prices(_cached_data)
+    products = get_product_list(_cached_data)
     return render_template("index.html", latest=latest, products=products)
 
 @app.route("/api/data")
 @login_required
 def api_data():
-    data = parse_prices()
-    return jsonify(data)
+    return jsonify(_cached_data)
 
 @app.route("/api/latest")
 @login_required
 def api_latest():
-    data = parse_prices()
-    latest = get_latest_prices(data)
+    latest = get_latest_prices(_cached_data)
     return jsonify(latest)
 
 if __name__ == "__main__":
