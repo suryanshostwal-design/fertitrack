@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 import json
 import os
-from parse_data import parse_prices, get_product_list, get_latest_prices
+from parse_data import get_product_list, get_latest_prices
 from functools import wraps
 
 app = Flask(__name__)
@@ -9,10 +9,11 @@ app.secret_key = "fertitrack-secret-2024"
 
 PASSWORD = "fertitrack2024"
 
-# Cache data at startup so we don't re-parse on every request
-print("Loading fertilizer data...")
-_cached_data = parse_prices()
-print(f"Loaded {len(_cached_data)} price series.")
+# Load pre-generated JSON — fast, no Excel parsing needed at runtime
+_data_path = os.path.join(os.path.dirname(__file__), "data", "prices.json")
+with open(_data_path) as f:
+    _cached_data = json.load(f)
+print(f"Loaded {len(_cached_data)} price series from JSON.")
 
 def login_required(f):
     @wraps(f)
